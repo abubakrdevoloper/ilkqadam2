@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101323">
+  <title>ILK QADAM — Zamonaviy Intellektual O‘yin Platformasi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient decorative lights -->
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <div class="ambient ambient-three"></div>
+
+  <!-- Confetti canvas for celebrations -->
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+  <main id="app">
+    <!-- Welcome & Login Screen -->
+    <section id="welcome" class="welcome-screen">
+      <div class="welcome-card">
+        <div class="brand-mark">IQ<span>✦</span></div>
+        <p class="eyebrow">YOUR GAME · YOUR WORLD</p>
+        <h1>ILK <span>QADAM</span></h1>
+        <p class="welcome-copy">O‘z dunyongni tanla. Yangi o‘yinlarni kashf et. Aql, xotira va tezligingni har bir qadamda oshir!</p>
+
+        <!-- Saved Profiles Quick Select (if any exist) -->
+        <div id="savedProfilesSection" class="saved-profiles-section hidden">
+          <label class="setting-label">Saqlangan o‘yinchilar:</label>
+          <div id="savedProfilesList" class="saved-profiles-list"></div>
+          <div class="divider-text"><span>yoki yangi o‘yinchi sifatida kir</span></div>
+        </div>
+
+        <form id="entryForm" class="entry-form">
+          <label for="username">O‘yinchi nomi</label>
+          <input id="username" name="username" maxlength="18" minlength="3" placeholder="Masalan: Bilimdon_01" autocomplete="nickname" required>
+          
+          <label for="ageGroup">Yosh toifang</label>
+          <select id="ageGroup" required>
+            <option value="">Yosh toifasini tanla</option>
+            <option value="3-5">3–5 yosh (Kichik Kashfiyotchilar)</option>
+            <option value="5-9">5–9 yosh (Sarguzasht Olam)</option>
+            <option value="9-15">9–15 yosh (Kelajak Avlodi)</option>
+            <option value="15-20">15–20 yosh (Elita Zonasi)</option>
+            <option value="21-25">21–25 yosh (Pro Arena)</option>
+            <option value="26-30">26–30 yosh (Master Mind)</option>
+            <option value="31-40">31–40 yosh (Afsonalar Klubi)</option>
+          </select>
+          
+          <p class="form-note">✦ 3–12 yoshdagi foydalanuvchilar ota-ona yoki murabbiy nazorati bilan foydalanishi tavsiya etiladi.</p>
+          <button class="primary-btn full" type="submit">Dunyoga kirish <span>↗</span></button>
+          <p id="entryError" class="error-message" aria-live="polite"></p>
+        </form>
+        <div class="welcome-foot"><span>✦</span> O‘yna · O‘rgan · Rivojlan · Yutuqlar yut</div>
+      </div>
+      <div class="welcome-orbit orbit-a"></div>
+      <div class="welcome-orbit orbit-b"></div>
+    </section>
+
+    <!-- Main Dashboard -->
+    <section id="dashboard" class="dashboard hidden">
+      <!-- Desktop Sidebar -->
+      <aside class="sidebar">
+        <a class="side-brand" href="#" aria-label="ILK QADAM bosh sahifa">
+          <span class="brand-mini">IQ</span>
+          <span>ILK QADAM</span>
+        </a>
+        
+        <div class="side-label">ASOSIY MENYU</div>
+        <button class="nav-item active" data-view="home"><span>◈</span> Bosh sahifa</button>
+        <button class="nav-item" data-view="games"><span>▦</span> O‘yinlar</button>
+        <button class="nav-item" data-view="shop"><span>🛒</span> Do‘kon <span class="nav-badge">Yangi</span></button>
+        <button class="nav-item" data-view="missions"><span>✧</span> Topshiriqlar</button>
+        <button class="nav-item" data-view="achievements"><span>🎖️</span> Yutuqlar</button>
+        <button class="nav-item" data-view="analytics"><span>📊</span> Tahlil & Aql</button>
+        <button class="nav-item" data-view="leaderboard"><span>♜</span> Reyting</button>
+        <button class="nav-item" data-view="profile"><span>◉</span> Profil</button>
+        
+        <div class="sidebar-bottom">
+          <div class="side-tip">
+            <span>✦</span>
+            <b>Har kuni yangi bilim</b>
+            <small>Kunlik seriyani yo‘qotma, doimiy o‘yna va ko‘proq ILK UC yut!</small>
+          </div>
+          <button id="changeUser" class="nav-item change-user-btn"><span>⇄</span> O‘yinchini almashtirish</button>
+        </div>
+      </aside>
+
+      <!-- Main Application Area -->
+      <div class="main-area">
+        <!-- Top Navigation Bar -->
+        <header class="topbar">
+          <div class="mobile-brand">
+            <span class="brand-mini">IQ</span> 
+            <span>ILK QADAM</span>
+          </div>
+          
+          <div class="crumb">
+            <span>O‘YIN MAYDONI</span>
+            <b>/</b>
+            <strong id="crumbName">Bosh sahifa</strong>
+          </div>
+
+          <div class="top-actions">
+            <!-- Audio Sound FX Toggle -->
+            <button id="soundToggle" class="top-icon-btn" title="Ovozni yoqish / o‘chirish" aria-label="Ovoz sozlamasi">
+              <span id="soundIcon">🔊</span>
+            </button>
+
+            <!-- Daily Streak Pill -->
+            <div id="streakPill" class="streak-pill" title="Kunlik seriya (har kuni kirib o'ynang)">
+              <span class="flame-icon">🔥</span>
+              <b id="streakCount">1</b>
+              <small>kun</small>
+            </div>
+
+            <!-- Virtual UC Balance -->
+            <button class="uc-pill" id="ucPillShortcut" title="Virtual ILK UC balans — Do'konda sarflang!">
+              <span>✦</span>
+              <b id="ucBalance">0</b>
+              <small>UC</small>
+            </button>
+
+            <!-- Player Profile Shortcut -->
+            <button class="profile-chip" id="profileShortcut" title="Profilni ochish">
+              <span class="avatar-small" id="topAvatar">✦</span>
+              <div class="profile-chip-text">
+                <span id="topUsername">Player</span>
+                <small id="topTitle" class="top-title">Boshlovchi</small>
+              </div>
+              <i>⌄</i>
+            </button>
+          </div>
+        </header>
+
+        <!-- VIEW: Home (Bosh Sahifa) -->
+        <section id="view-home" class="view active-view">
+          <!-- Hero Banner -->
+          <div class="hero-panel">
+            <div class="hero-content">
+              <div class="world-tag">
+                <span class="live-dot"></span>
+                <span id="worldLabel">NEXT GENERATION</span>
+              </div>
+              <p class="hero-greeting">Xush kelibsan, <span id="greetingName">Player</span>!</p>
+              <h2 id="heroTitle">O‘zingning <em>keyingi</em> darajangga chiq.</h2>
+              <p id="heroDescription">Aql, tezlik, xotira va strategiyangni sinab ko‘r. Har bir to‘g‘ri javob — yangi g‘alaba!</p>
+              <div class="hero-buttons">
+                <button class="primary-btn" id="exploreGames">O‘yinlarni boshlash <span>↗</span></button>
+                <button class="outline-btn" id="openShopHome">Do‘konga o‘tish 🛒</button>
+              </div>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+              <div class="hero-ring"></div>
+              <div class="hero-orb" id="heroOrbSymbol">✦</div>
+              <div class="hero-cube">IQ</div>
+              <div class="hero-spark spark-one">✧</div>
+              <div class="hero-spark spark-two">✦</div>
+            </div>
+            <div class="hero-index">0<span>1</span> / HAR KUNI YANGI QADAM</div>
+          </div>
+
+          <!-- Quick Stats Grid -->
+          <div class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-icon purple">✦</div>
+              <div>
+                <small>VIRTUAL BALANS</small>
+                <strong id="statUc">0</strong>
+                <span>ILK UC (Do‘konda ishlat)</span>
+              </div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon blue">↗</div>
+              <div>
+                <small>TAJRIBA (XP)</small>
+                <strong id="statXp">0 XP</strong>
+                <span id="levelText">1-daraja</span>
+              </div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon orange">♜</div>
+              <div>
+                <small>O‘YNALGAN O‘YINLAR</small>
+                <strong id="statGames">0</strong>
+                <span>Yakunlangan urinish</span>
+              </div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon green">◈</div>
+              <div>
+                <small>G‘ALABALAR</small>
+                <strong id="statWins">0</strong>
+                <span id="statWinRate">0% samaradorlik</span>
+              </div>
+            </article>
+          </div>
+
+          <!-- Featured Games Heading -->
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">SEN UCHUN SARALANDI</p>
+              <h3>Bugungi tavsiya o‘yinlar</h3>
+            </div>
+            <button class="text-btn" data-view="games">Barcha o‘yinlar (Kutubxona) ↗</button>
+          </div>
+          <div id="featuredGames" class="games-grid"></div>
+
+          <!-- Progress and Daily Bonus Section -->
+          <div class="bottom-grid">
+            <!-- Level Progress Panel -->
+            <section class="panel progress-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">RIVOJLANISH JARAYONI</p>
+                  <h3>Darajang sari qadam</h3>
+                </div>
+                <span class="level-badge" id="levelBadge">LVL 1</span>
+              </div>
+              <div class="progress-meta">
+                <span id="xpProgressText">0 / 100 XP</span>
+                <span id="xpPercent">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="xpBar" class="progress-fill"></div>
+              </div>
+              <p class="muted small" id="nextLevelMsg">Keyingi darajaga yetish uchun yana 100 XP to‘plang.</p>
+            </section>
+
+            <!-- Daily Claim Panel -->
+            <section class="panel daily-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">KUNLIK MUKOFOT & SERIYA</p>
+                  <h3>Bugungi bonus</h3>
+                </div>
+                <span class="daily-icon">🎁</span>
+              </div>
+              <p id="dailyText">Har kuni kirib o‘yna va seriya bonusini oshirib bor!</p>
+              <div class="daily-reward">
+                <span>✦</span> 
+                <span id="dailyRewardAmount">+25 UC</span>
+                <button id="dailyClaim" class="claim-btn">Bonusni olish</button>
+              </div>
+              <small class="muted" id="dailyStatus">Kuniga bir marta beriladi</small>
+            </section>
+          </div>
+
+          <!-- Brain Skills Radar / Summary Banner -->
+          <div class="panel brain-summary-panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">AQLIY KO‘RSATKICHLAR</p>
+                <h3>Qobiliyatlaring tahlili</h3>
+              </div>
+              <button class="text-btn" data-view="analytics">To‘liq tahlilni ko‘rish ↗</button>
+            </div>
+            <div class="skills-mini-grid" id="homeSkillsGrid"></div>
+          </div>
+        </section>
+
+        <!-- VIEW: Games Library (O'yinlar) -->
+        <section id="view-games" class="view">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">O‘YINLAR KUTUBXONASI</p>
+              <h2>Sening maydoning<span>.</span></h2>
+              <p class="muted">Yoshing, qiziqishing va o‘rganish uslubingga mos interaktiv o‘yinlarni tanla.</p>
+            </div>
+            <div class="game-count" id="gameCount">0 TA O‘YIN</div>
+          </div>
+
+          <!-- Search & Filter Controls -->
+          <div class="games-filter-container">
+            <div class="filter-row">
+              <button class="filter-chip selected" data-filter="all">Barchasi</button>
+              <button class="filter-chip" data-filter="Aql">🧠 Aql & Bilim</button>
+              <button class="filter-chip" data-filter="Tezlik">⚡ Tezlik & Refleks</button>
+              <button class="filter-chip" data-filter="Strategiya">♟ Strategiya</button>
+              <button class="filter-chip" data-filter="Xotira">🧩 Xotira</button>
+            </div>
+            <div class="search-box">
+              <input type="text" id="gameSearchInput" placeholder="O‘yin nomini qidirish..." aria-label="O‘yin qidirish">
+            </div>
+          </div>
+
+          <div id="allGames" class="games-grid"></div>
+        </section>
+
+        <!-- VIEW: Virtual Shop (Do'kon) - NEW INNOVATION! -->
+        <section id="view-shop" class="view">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">VIRTUAL DO‘KON & USTAXONA</p>
+              <h2>ILK Bozor<span>.</span></h2>
+              <p class="muted">O‘yinlarda yutgan ILK UC laringizni noyob avatarlar, unvonlar, ramkalar va bonuslarga sarflang!</p>
+            </div>
+            <div class="shop-balance-badge">
+              <span>Sening balansing:</span>
+              <strong id="shopBalanceDisplay">0 UC</strong>
+            </div>
+          </div>
+
+          <!-- Shop Navigation Tabs -->
+          <div class="shop-tabs">
+            <button class="shop-tab active" data-shop-cat="avatars">🎭 Avatarlar</button>
+            <button class="shop-tab" data-shop-cat="titles">🏷️ Unvonlar</button>
+            <button class="shop-tab" data-shop-cat="frames">✨ Profil Ramkalari</button>
+            <button class="shop-tab" data-shop-cat="boosters">⚡ Kuchaytirgichlar</button>
+          </div>
+
+          <!-- Shop Items Grid -->
+          <div id="shopGrid" class="shop-grid"></div>
+        </section>
+
+        <!-- VIEW: Missions (Topshiriqlar) -->
+        <section id="view-missions" class="view">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">MAQSADLAR VA MUKOFOTLAR</p>
+              <h2>Topshiriqlar<span>.</span></h2>
+              <p class="muted">Har bir topshiriqni bajarib qo‘shimcha UC va XP to‘pla!</p>
+            </div>
+            <span class="game-count" id="missionProgressCount">0 / 0 BAJARILDI</span>
+          </div>
+          <div id="missionList" class="mission-list"></div>
+        </section>
+
+        <!-- VIEW: Achievements (Yutuqlar) - NEW INNOVATION! -->
+        <section id="view-achievements" class="view">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">SHON-SHARAF VA MEDALLAR</p>
+              <h2>Yutuqlar Kolleksiyasi<span>.</span></h2>
+              <p class="muted">Katta marralarni zabt et va noyob nishonlarni to‘pla!</p>
+            </div>
+            <span class="game-count" id="achievementCount">0 / 8 OCHILGAN</span>
+          </div>
+          <div id="achievementsGrid" class="achievements-grid"></div>
+        </section>
+
+        <!-- VIEW: Analytics & Brain Skills (Tahlil va Aql) - NEW INNOVATION! -->
+        <section id="view-analytics" class="view">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">AQLIY RIVOJLANISH & HISOBOT</p>
+              <h2>Tahlil & Statistika<span>.</span></h2>
+              <p class="muted">O‘yinchi va ota-onalar uchun intellektual ko‘rsatkichlar tahlili.</p>
+            </div>
+          </div>
+
+          <div class="analytics-layout">
+            <!-- Left: Brain Skills Breakdown -->
+            <section class="panel analytics-skills-card">
+              <h3>Intellektual Mahoratlar</h3>
+              <p class="muted small">O‘yinlar davomidagi natijalarga asoslangan baholash:</p>
+              <div id="analyticsBars" class="analytics-bars-container"></div>
+            </section>
+
+            <!-- Right: Learning Tips & Age Info -->
+            <section class="panel analytics-tips-card">
+              <h3>Tavsiyalar & Pedagogik Maslahatlar</h3>
+              <div id="analyticsTips" class="analytics-tips-list"></div>
+              <div class="parent-advice-box">
+                <b>💡 Ota-onalar va murabbiylar uchun:</b>
+                <p id="parentAdviceText">Bolaning mantiqiy fikrlashini rivojlantirish uchun kuniga 15-20 daqiqa turli xil o‘yin toifalarini aralashtirib o‘ynash eng samarali hisoblanadi.</p>
+              </div>
+            </section>
+          </div>
+
+          <!-- Match History -->
+          <div class="panel match-history-panel">
+            <div class="panel-head">
+              <h3>Oxirgi o‘yinlar tarixi</h3>
+              <span class="muted small" id="historyCount">0 ta o‘yin</span>
+            </div>
+            <div id="historyTable" class="history-list"></div>
+          </div>
+        </section>
+
+        <!-- VIEW: Leaderboard (Reyting) -->
+        <section id="view-leaderboard" class="view">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">ENG FAOL VA ZUKKO O‘YINCHILAR</p>
+              <h2>Reyting Jadvali<span>.</span></h2>
+              <p class="muted">Ushbu qurilmada va dunyodagi eng ilg‘or bilimdonlar peshqadamligi.</p>
+            </div>
+            <div class="leaderboard-tabs">
+              <button class="filter-chip selected" id="leaderFilterAll">Barcha O‘yinchilar</button>
+              <button class="filter-chip" id="leaderFilterWorld">Mening Yosh Guruhim</button>
+            </div>
+          </div>
+          
+          <div class="panel leaderboard-panel">
+            <div class="leader-head">
+              <span>O‘RIN</span>
+              <span>O‘YINCHI</span>
+              <span>UNVON</span>
+              <span>TAJRIBA</span>
+              <span>DARAJA</span>
+            </div>
+            <div id="leaderRows"></div>
+          </div>
+        </section>
+
+        <!-- VIEW: Profile (Profil) -->
+        <section id="view-profile" class="view">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">O‘YINCHI SHAXSIY KARTASI</p>
+              <h2>Profil & Sozlamalar<span>.</span></h2>
+              <p class="muted">O‘yin tarixing, jihozlaring va profilingni moslashtir.</p>
+            </div>
+          </div>
+
+          <div class="profile-layout">
+            <!-- Profile Identity Card -->
+            <section class="panel profile-main" id="profileMainCard">
+              <div class="profile-avatar-wrap">
+                <div class="profile-avatar" id="profileAvatar">✦</div>
+                <div class="profile-frame-glow" id="profileFrameGlow"></div>
+              </div>
+              <h3 id="profileName">Player</h3>
+              <div class="profile-title-tag" id="profileTitleDisplay">Boshlovchi</div>
+              <p class="muted" id="profileWorld">NEXT GENERATION</p>
+              <div class="profile-level" id="profileLevel">1-DARAJA</div>
+              
+              <div class="profile-details">
+                <div>
+                  <small>ILK UC</small>
+                  <b id="profileUc">0</b>
+                </div>
+                <div>
+                  <small>XP</small>
+                  <b id="profileXp">0</b>
+                </div>
+                <div>
+                  <small>O‘YINLAR</small>
+                  <b id="profileGames">0</b>
+                </div>
+              </div>
+
+              <!-- Equipped Boosters Status -->
+              <div class="equipped-boosters-row">
+                <div class="booster-pill" id="boosterHintPill">
+                  <span>💡 50/50 Maslahat:</span> <b id="boosterHintCount">0 ta</b>
+                </div>
+                <div class="booster-pill" id="boosterXpPill">
+                  <span>⚡ 2x XP Kuchaytirgich:</span> <b id="boosterXpCount">0 ta</b>
+                </div>
+              </div>
+            </section>
+
+            <!-- Profile Settings & Data Management -->
+            <section class="panel profile-settings">
+              <p class="eyebrow">SHAXSIYLASHTIRISH</p>
+              <h3>Profil Jihozlari</h3>
+              
+              <label class="setting-label" for="avatarSelect">Avatarni tanla (Olinganlar orasidan):</label>
+              <select id="avatarSelect"></select>
+              
+              <label class="setting-label" for="titleSelect">Unvonni tanla:</label>
+              <select id="titleSelect"></select>
+
+              <label class="setting-label" for="frameSelect">Profil ramkasini tanla:</label>
+              <select id="frameSelect"></select>
+
+              <button id="saveProfileSettings" class="primary-btn full">Sozlamalarni saqlash</button>
+              
+              <hr class="panel-divider">
+
+              <p class="eyebrow">MA’LUMOTLARNI BOSHQARISH</p>
+              <h3>Zaxira & Eksport</h3>
+              <div class="data-actions-grid">
+                <button id="exportDataBtn" class="outline-btn">📥 Profilni yuklab olish (JSON)</button>
+                <label class="outline-btn file-upload-btn">
+                  📤 Profilni tiklash (Import)
+                  <input type="file" id="importDataInput" accept=".json" style="display:none">
+                </label>
+                <button id="resetDataBtn" class="danger-btn">🗑️ Natijalarni tozalash</button>
+              </div>
+
+              <button id="logoutBtn" class="outline-btn full switch-account-btn">⇄ Boshqa o‘yinchiga o‘tish</button>
+            </section>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+          <div>
+            <span>© 2026 ILK QADAM — Kelajak intellektual o‘yinlari</span>
+            <span class="footer-dot">·</span>
+            <span>O‘yna · O‘rgan · Rivojlan</span>
+          </div>
+          <div class="footer-links">
+            <button id="aiOpenFooter">ILK AI Yordamchi bilan suhbat ↗</button>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav id="mobileNav" class="mobile-nav hidden">
+    <button class="active" data-view="home">
+      <span>◈</span>
+      <small>Asosiy</small>
+    </button>
+    <button data-view="games">
+      <span>▦</span>
+      <small>O‘yinlar</small>
+    </button>
+    <button data-view="shop">
+      <span>🛒</span>
+      <small>Do‘kon</small>
+    </button>
+    <button data-view="leaderboard">
+      <span>♜</span>
+      <small>Reyting</small>
+    </button>
+    <button data-view="profile">
+      <span>◉</span>
+      <small>Profil</small>
+    </button>
+  </nav>
+
+  <!-- Interactive Game Modal Window -->
+  <div id="gameModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="gameTitle">
+    <div class="modal-card game-modal-card">
+      <button class="close-btn" data-close="gameModal" aria-label="O‘yinni yopish">×</button>
+      
+      <!-- Top Modal Stats Bar -->
+      <div class="game-modal-top">
+        <div class="modal-tags">
+          <span id="gameCategory" class="world-tag">AQL</span>
+          <span id="gameReward" class="reward-tag">✦ +10 UC</span>
+        </div>
+        <div class="modal-round-info">
+          <span id="gameRoundIndicator" class="round-indicator">Savol: 1 / 3</span>
+          <span id="gameScoreIndicator" class="score-indicator">To‘g‘ri: 0</span>
+        </div>
+      </div>
+
+      <h2 id="gameTitle">O‘yin nomi</h2>
+      <p id="gameInstructions" class="muted">O‘yin qoidalari va yo‘riqnomasi.</p>
+
+      <!-- Power-up Hint Button in game -->
+      <div class="game-helper-bar">
+        <button id="useHintBtn" class="hint-btn hidden" title="50/50 Maslahat ishlatish">
+          💡 50/50 Maslahat (<span id="hintCountBadge">0</span>)
+        </button>
+        <div id="gameTimerBar" class="game-timer-bar hidden">
+          <div id="gameTimerFill" class="timer-fill"></div>
+        </div>
+      </div>
+
+      <!-- Main Interactive Stage -->
+      <div id="gameStage" class="game-stage"></div>
+
+      <!-- Realtime Feedback Box -->
+      <div id="gameFeedback" class="game-feedback" aria-live="polite"></div>
+
+      <!-- Action Buttons -->
+      <div class="game-actions">
+        <button id="gameRestart" class="outline-btn">Qayta boshlash</button>
+        <button id="gameNextOrFinish" class="primary-btn">Keyingi <span>→</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ILK AI Floating Chatbot Panel -->
+  <div id="aiPanel" class="ai-panel hidden">
+    <div class="ai-header">
+      <div class="ai-avatar">✦</div>
+      <div class="ai-header-info">
+        <b>ILK AI Smart Assistant</b>
+        <small class="ai-status"><span class="online-dot"></span> Faol · Yordamga tayyor</small>
+      </div>
+      <button id="aiClose" class="close-btn" aria-label="Yopish">×</button>
+    </div>
+
+    <!-- Quick Suggestion Chips -->
+    <div class="ai-chips">
+      <button class="ai-chip" data-ai-prompt="🎲 Menga qiziqarli o‘yin tavsiya et">🎲 Tavsiya</button>
+      <button class="ai-chip" data-ai-prompt="🧩 Menga topishmoq ayt!">🧩 Topishmoq</button>
+      <button class="ai-chip" data-ai-prompt="💡 Qanday qilib ko‘proq ILK UC yig‘sam bo‘ladi?">💡 UC yig‘ish</button>
+      <button class="ai-chip" data-ai-prompt="🏆 Keyingi darajaga o‘tishim uchun nima kerak?">🏆 Daraja</button>
+    </div>
+
+    <div id="aiMessages" class="ai-messages">
+      <div class="chat-bubble bot">
+        Salom! Men <b>ILK AI</b> intellektual yordamchisiman. O‘yinlarni tanlash, yangi qoidalarni o‘rganish, topishmoqlar yechish yoki UC ballar to‘plashda senga bajonidil yordam beraman! Nimadan boshlaymiz?
+      </div>
+    </div>
+
+    <form id="aiForm" class="ai-form">
+      <input id="aiInput" placeholder="Savolingiz yoki javobingizni yozing..." maxlength="300" autocomplete="off" required>
+      <button type="submit" aria-label="Yuborish">➤</button>
+    </form>
+    <p class="ai-disclaimer">✦ ILK AI intellektual yordamchisi. Savol va topishmoqlarga interaktiv javob beradi.</p>
+  </div>
+
+  <!-- Floating AI Assistant Action Button -->
+  <button id="aiFab" class="ai-fab hidden" aria-label="ILK AI yordamchini ochish">
+    <span class="ai-fab-icon">✦</span>
+    <small>AI</small>
+  </button>
+
+  <!-- Toast Notification Message -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
